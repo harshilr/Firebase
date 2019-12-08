@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,7 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -45,6 +52,33 @@ public class RegisterFragment extends Fragment {
         password_editText = view.findViewById(R.id.password);
         confirmPassword = view.findViewById(R.id.forgotpassword);
 
+        buttonRegister = view.findViewById(R.id.signin);
+
+        buttonRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!checkEmptyField()){
+                    if (password_editText.getText().length()<6){
+                        password_editText.setError("Weak Password,Password should be atleast 6 digits");
+                        password_editText.requestFocus();
+                    }
+                    else {
+                        if (!password_editText.getText().toString().equals(confirmPassword.getText().toString())){
+                            confirmPassword.setError("Password not match");
+                            confirmPassword.requestFocus();
+                        }
+                        else{
+                            String emaild = email_editText.getText().toString();
+                            String password = password_editText.getText().toString();
+                            String name = name_edittext.getText().toString();
+
+                            createUser(emaild,password,name);
+                        }
+                    }
+                }
+            }
+        });
+
     }
 
     public RegisterFragment(){
@@ -66,7 +100,7 @@ public class RegisterFragment extends Fragment {
 
     }
 
-    public boolean checkEmpty   Field(){
+    public boolean checkEmptyField(){
 
         if (TextUtils.isEmpty(email_editText.getText().toString())){
             email_editText.setError("Email cannot found");
@@ -92,6 +126,28 @@ public class RegisterFragment extends Fragment {
 
 
         return false;
+    }
+
+    public void createUser (String email,String password,String name){
+        firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+
+                if (task.isSuccessful()){
+                    Toast.makeText(getActivity().getApplicationContext(),"Register Success!",Toast.LENGTH_LONG).show();
+                    FirebaseAuth.getInstance().signOut();
+                    NavController navController = Navigation.findNavController(getActivity(),R.id.hostfragment);
+                    navController.navigate(R.id.loginFragment);
+
+                }
+            }
+        }).addOnFailureListener(getActivity(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Toast.makeText(getActivity().getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }
