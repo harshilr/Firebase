@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class LoginFragment extends Fragment implements View.OnClickListener {
@@ -34,11 +35,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    EditText emailId,password;
+    EditText emailId, password;
     TextView register;
     Button login;
 
-    public LoginFragment(){}
+    public LoginFragment() {
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +53,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        emailId =view.findViewById(R.id.emailId);
+        emailId = view.findViewById(R.id.emailId);
         password = view.findViewById(R.id.password);
         register = view.findViewById(R.id.text_register);
         login = view.findViewById(R.id.login);
@@ -70,8 +72,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     }
 
 
-
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -83,26 +83,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         int id = v.getId();
 
-        if (id==R.id.login){
+        if (id == R.id.login) {
 
-            if (TextUtils.isEmpty(emailId.getText().toString())){
+            if (TextUtils.isEmpty(emailId.getText().toString())) {
                 emailId.setError("Email cannot be empty!");
                 emailId.requestFocus();
-            }
-            else if (TextUtils.isEmpty(password.getText().toString())){
+            } else if (TextUtils.isEmpty(password.getText().toString())) {
                 password.setError("Password cannot be empty!");
                 password.requestFocus();
-            }
-            else {
+            } else {
                 String email = emailId.getText().toString();
                 String Password = password.getText().toString();
 
-                loginUser(email,Password);
+                loginUser(email, Password);
             }
-        }
-
-        else if (id==R.id.text_register){
-            NavController navController = Navigation.findNavController(getActivity(),R.id.hostfragment);
+        } else if (id == R.id.text_register) {
+            NavController navController = Navigation.findNavController(getActivity(), R.id.hostfragment);
             navController.navigate(R.id.registerFragment);
 
 
@@ -115,35 +111,41 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         super.onStart();
 
         firebaseUser = firebaseAuth.getCurrentUser();
-        if (firebaseUser!=null){
-            Toast.makeText(getActivity().getApplicationContext(),"User Already Signing",Toast.LENGTH_LONG).show();
+        if (firebaseUser != null) {
+            Toast.makeText(getActivity().getApplicationContext(), "User Already Signing", Toast.LENGTH_LONG).show();
+            updateUI(firebaseUser);
         }
     }
 
-    public void loginUser(String email, String password){
+    public void loginUser(String email, String password) {
 
-        firebaseAuth.signInWithEmailAndPassword(email,password)
+        firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        if (task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             firebaseUser = firebaseAuth.getCurrentUser();
-                            Toast.makeText(getActivity().getApplicationContext(),"Login successfull",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity().getApplicationContext(), "Login successfull", Toast.LENGTH_LONG).show();
+                            updateUI(firebaseUser);
                         }
-
-
-
 
 
                     }
                 }).addOnFailureListener(getActivity(), new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-             Toast.makeText(getActivity().getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
 
+    }
+
+    public void updateUI(FirebaseUser user) {
+        NavController navController = Navigation.findNavController(getActivity(), R.id.hostfragment);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user",user);
+        navController.navigate(R.id.dashboard,bundle);
     }
 }
 

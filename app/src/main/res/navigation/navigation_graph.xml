@@ -17,4 +17,9 @@
         android:name="com.example.firebase.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" />
+    <fragment
+        android:id="@+id/dashboard"
+        android:name="com.example.firebase.Dashboard"
+        android:label="fragment_dashboard"
+        tools:layout="@layout/fragment_dashboard" />
 </navigation>

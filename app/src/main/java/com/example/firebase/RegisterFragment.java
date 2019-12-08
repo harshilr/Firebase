@@ -20,9 +20,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class RegisterFragment extends Fragment {
@@ -128,17 +134,38 @@ public class RegisterFragment extends Fragment {
         return false;
     }
 
-    public void createUser (String email,String password,String name){
+    public void createUser (final String email, String password, final String name){
         firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
                 if (task.isSuccessful()){
-                    Toast.makeText(getActivity().getApplicationContext(),"Register Success!",Toast.LENGTH_LONG).show();
-                    FirebaseAuth.getInstance().signOut();
-                    NavController navController = Navigation.findNavController(getActivity(),R.id.hostfragment);
-                    navController.navigate(R.id.loginFragment);
 
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
+                    Map<String,Object> userMap = new HashMap<>();
+                    userMap.put("name",name);
+                    userMap.put("Email",email);
+
+                    firebaseFirestore.collection("user").document(user.getUid()).set(userMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                            Toast.makeText(getActivity().getApplicationContext(),"Register Success!",Toast.LENGTH_LONG).show();
+                            FirebaseAuth.getInstance().signOut();
+                            NavController navController = Navigation.findNavController(getActivity(),R.id.hostfragment);
+                            navController.navigate(R.id.loginFragment);
+
+                        }
+                    });
+
+
+
+
+                }
+                else {
+                    System.out.println("Error"+task.getException());
                 }
             }
         }).addOnFailureListener(getActivity(), new OnFailureListener() {
