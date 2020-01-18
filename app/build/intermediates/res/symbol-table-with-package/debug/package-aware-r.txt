@@ -734,6 +734,7 @@ color switch_thumb_normal_material_dark
 color switch_thumb_normal_material_light
 color tooltip_background_dark
 color tooltip_background_light
+color white
 dimen abc_action_bar_content_inset_material
 dimen abc_action_bar_content_inset_with_nav
 dimen abc_action_bar_default_height_material
@@ -1039,6 +1040,7 @@ drawable abc_textfield_search_material
 drawable abc_vector_test
 drawable avd_hide_password
 drawable avd_show_password
+drawable background
 drawable common_full_open_on_phone
 drawable common_google_signin_btn_icon_dark
 drawable common_google_signin_btn_icon_dark_focused
@@ -1180,6 +1182,7 @@ id dark
 id dashboard
 id decor_content_parent
 id default_activity_button
+id deleteButton
 id design_bottom_sheet
 id design_menu_item_action_area
 id design_menu_item_action_area_stub
@@ -1191,6 +1194,7 @@ id direct
 id disableHome
 id edit_query
 id emailId
+id emailId_pop
 id end
 id end_padder
 id enterAlways
@@ -1231,6 +1235,7 @@ id listMode
 id list_item
 id login
 id loginFragment
+id login_pop
 id masked
 id media_actions
 id message
@@ -1256,6 +1261,7 @@ id parent
 id parentPanel
 id parent_matrix
 id password
+id password_pop
 id percent
 id pin
 id progress_circular
@@ -1437,6 +1443,7 @@ layout notification_template_media
 layout notification_template_media_custom
 layout notification_template_part_chronometer
 layout notification_template_part_time
+layout popup_message
 layout select_dialog_item_material
 layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
